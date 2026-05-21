@@ -1,1 +1,68 @@
 <!-- editing listings -->
+{% extends "base.html" %}
+{% block title %}Edit Listing — BhrisTCG{% endblock %}
+{% block content %}
+<div class="container page">
+  <div class="listing-menu">
+    <a href="{{ url_for('store.my_store') }}" style="font-size:13px;color:var(--c-cyan);">← My Store</a>
+    <h1 style="font-family:var(--ff-display);font-size:24px;font-weight:800;margin:12px 0 20px;">Edit Listing</h1>
+
+    {% if listing.card %}
+      <div class="listing-menu__card-preview">
+        {% if listing.card.image_url %}
+          <img src="{{ listing.card.image_url }}" alt="{{ listing.card.name }}" />
+        {% endif %}
+        <div style="font-family:var(--ff-display);font-size:18px;font-weight:800;margin-top:8px;">{{ listing.card.name }}</div>
+        <div style="font-size:12px;color:var(--c-text-3);">{{ listing.card.set_name }} · {{ listing.card.rarity }}</div>
+        {% if listing.card.market_price %}
+          <div style="font-size:13px;color:var(--c-cyan);font-weight:600;margin-top:4px;">Market: NZ${{ '%.2f'|format(listing.card.market_price) }}</div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('listing.edit_listing', listing_id=listing.id) }}" novalidate>
+      {{ form.hidden_tag() }}
+
+      <div class="listing-menu__form-section">
+        <div class="listing-menu__grid">
+          <div class="form-group">
+            <label class="form-label">Condition</label>
+            {{ form.condition(class='form-control', id='conditionSelect', onchange="updatePriceSuggestion('{{ listing.card_id }}')") }}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Finish</label>
+            {{ form.finish(class='form-control') }}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Price (NZD)</label>
+            {{ form.price(class='form-control', step='0.01', min='0.01', id='priceInput') }}
+            {% for e in form.price.errors %}<span class="form-error">{{ e }}</span>{% endfor %}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Quantity</label>
+            {{ form.quantity(class='form-control', min='1', max='100') }}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Delivery</label>
+            {{ form.delivery_type(class='form-control') }}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Shipping Cost (NZD)</label>
+            {{ form.shipping_cost(class='form-control') }}
+          </div>
+        </div>
+      </div>
+
+      <div class="listing-menu__notes-section">
+        <label>Notes</label>
+        {{ form.notes(class='form-control', rows='4') }}
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:16px;">
+        <button type="submit" class="btn btn--primary">Save Changes</button>
+        <a href="{{ url_for('store.my_store') }}" class="btn btn--outline">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
