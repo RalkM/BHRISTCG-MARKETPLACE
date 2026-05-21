@@ -1,1 +1,74 @@
 <!-- Login -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login — BhrisTCG</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
+</head>
+<body>
+<div class="auth-page">
+  <div class="auth-card">
+    <a href="{{ url_for('marketplace.home') }}" class="auth-card__back">← Back to home</a>
+
+    <div class="auth-card__header">
+      <div class="auth-card__logo">Bhris<span>TCG</span></div>
+      <div class="auth-card__title">Login</div>
+      <div class="auth-card__subtitle">Enter your credentials to access your account</div>
+    </div>
+
+    <div class="auth-card__body">
+      {% with messages = get_flashed_messages(with_categories=True) %}
+        {% for category, message in messages %}
+          <div style="padding:10px 12px;border-radius:6px;font-size:13px;margin-bottom:14px;
+                      background:{% if category=='danger' %}#ffeaed{% else %}#e8f5e9{% endif %};
+                      color:{% if category=='danger' %}#e53935{% else %}#2e7d32{% endif %};
+                      border:1px solid {% if category=='danger' %}#f48fb1{% else %}#a5d6a7{% endif %};">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endwith %}
+
+      <form method="POST" action="{{ url_for('auth.login') }}" novalidate>
+        {{ form.hidden_tag() }}
+
+        <div class="form-group">
+          <label class="form-label">Email / Username</label>
+          {{ form.email(class='form-control', placeholder='Enter your email or username', autofocus=true) }}
+          {% for e in form.email.errors %}<span class="form-error">{{ e }}</span>{% endfor %}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="input-with-icon">
+            {{ form.password(class='form-control', placeholder='Enter your password', type='password') }}
+            <button type="button" class="input-with-icon__icon toggle-password" title="Show/hide password">👁</button>
+          </div>
+          {% for e in form.password.errors %}<span class="form-error">{{ e }}</span>{% endfor %}
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--full" style="margin-top:8px;padding:12px;">
+          Login
+        </button>
+      </form>
+
+      <div class="auth-card__footer">
+        <div style="margin-bottom:6px;">
+          <a href="#" style="color:var(--c-text-3);font-size:13px;">Forgot Password?</a>
+        </div>
+        Don't have an account? <a href="{{ url_for('auth.register') }}">Sign Up</a>
+      </div>
+
+      <div style="margin-top:18px;padding:12px;background:#f9f9f9;border:1px solid #e0e0e0;border-radius:6px;font-size:11px;color:#888;">
+        <strong style="color:#555;">Demo:</strong> user21231@bhristcg.nz · sarah@bhristcg.nz · alex@bhristcg.nz<br>
+        Password: <code style="color:#00BCD4;">demo1234</code>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
