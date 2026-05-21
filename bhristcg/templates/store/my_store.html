@@ -1,1 +1,148 @@
 <!-- user store -->
+{% extends "base.html" %}
+{% block title %}My Store — BhrisTCG{% endblock %}
+{% block content %}
+<div class="container page">
+
+  <!-- Store header -->
+  <div class="card-surface" style="padding:24px;margin-bottom:20px;">
+    <div class="profile-header">
+      <div class="profile-avatar" style="width:64px;height:64px;font-size:26px;">
+        {% if current_user.avatar_url %}
+          <img src="{{ current_user.avatar_url }}" alt="{{ current_user.username }}" />
+        {% else %}
+          {{ current_user.username[0].upper() }}
+        {% endif %}
+      </div>
+      <div>
+        <div class="profile-name">{{ current_user.store_name or current_user.username }}</div>
+        {% if current_user.store_description %}
+          <p style="font-size:13px;color:var(--c-text-3);margin-top:4px;">{{ current_user.store_description }}</p>
+        {% endif %}
+        {% if current_user.average_rating %}
+          <div style="display:flex;align-items:center;gap:4px;margin-top:6px;font-size:13px;">
+            <span style="color:#f9a825;">★</span>
+            <strong>{{ current_user.average_rating }}</strong>
+            <span style="color:var(--c-text-3);">({{ current_user.review_count }} reviews)</span>
+          </div>
+        {% endif %}
+      </div>
+      <div class="profile-actions">
+        <a href="{{ url_for('store.store', username=current_user.username) }}" class="btn btn--outline btn--sm">Public View</a>
+        <a href="{{ url_for('store.edit_profile') }}" class="btn btn--outline btn--sm">Edit Profile</a>
+        <a href="{{ url_for('listing.new_listing') }}" class="btn btn--primary btn--sm">+ New Listing</a>
+      </div>
+    </div>
+
+    <div class="stats-row--4" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px;">
+      <div class="stat-box">
+        <div class="stat-box__label">Active Listings</div>
+        <div class="stat-box__value">{{ active_listings|length }}</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box__label">Total Sales</div>
+        <div class="stat-box__value">{{ current_user.total_sales }}</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box__label">Revenue</div>
+        <div class="stat-box__value" style="font-size:18px;">NZ${{ '%.2f'|format(current_user.total_revenue) }}</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box__label">Store Balance</div>
+        <div class="stat-box__value" style="font-size:18px;">NZ${{ '%.2f'|format(current_user.store_balance) }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Active listings tab -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+    <h2 style="font-family:var(--ff-display);font-size:18px;font-weight:700;">Active Listings</h2>
+    <a href="{{ url_for('listing.new_listing') }}" class="btn btn--primary btn--sm">+ Add Listing</a>
+  </div>
+
+  {% if active_listings %}
+    <div class="card-surface" style="overflow:hidden;margin-bottom:24px;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Card</th>
+            <th>Condition</th>
+            <th>Finish</th>
+            <th>Price</th>
+            <th>Delivery</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for listing in active_listings %}
+            <tr>
+              <td style="display:flex;align-items:center;gap:10px;">
+                {% if listing.card and listing.card.image_url %}
+                  <img src="{{ listing.card.image_url }}" alt="{{ listing.card.name }}" style="width:36px;border-radius:4px;flex-shrink:0;" />
+                {% endif %}
+                <div>
+                  <div style="font-weight:600;">{{ listing.card.name if listing.card else '—' }}</div>
+                  <div style="font-size:11px;color:var(--c-text-3);">{{ listing.card.set_name if listing.card else '' }}</div>
+                </div>
+              </td>
+              <td><span class="badge badge--nm">{{ listing.condition_label }}</span></td>
+              <td><span class="badge badge--holo">{{ listing.finish_label }}</span></td>
+              <td style="font-weight:700;">NZ${{ '%.2f'|format(listing.price) }}</td>
+              <td style="font-size:12px;color:var(--c-text-3);">{{ listing.delivery_type.replace('_',' ').title() }}</td>
+              <td>
+                <div style="display:flex;gap:6px;">
+                  <a href="{{ url_for('listing.edit_listing', listing_id=listing.id) }}" class="btn btn--outline btn--sm">Edit</a>
+                  <form method="POST" action="{{ url_for('listing.remove_listing', listing_id=listing.id) }}" style="display:inline;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                    <button type="submit" class="btn btn--danger btn--sm" onclick="return confirm('Remove this listing?')">Remove</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div style="text-align:center;padding:40px;background:var(--c-surface);border:1px solid var(--c-border);border-radius:var(--radius-lg);margin-bottom:24px;">
+      <p style="color:var(--c-text-3);margin-bottom:16px;">No active listings yet.</p>
+      <a href="{{ url_for('listing.new_listing') }}" class="btn btn--primary">List Your First Card</a>
+    </div>
+  {% endif %}
+
+  <!-- Sold listings -->
+  {% if sold_listings %}
+    <h2 style="font-family:var(--ff-display);font-size:18px;font-weight:700;margin-bottom:14px;">Sold</h2>
+    <div class="card-surface" style="overflow:hidden;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Card</th>
+            <th>Condition</th>
+            <th>Price</th>
+            <th>Sold</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for listing in sold_listings %}
+            <tr>
+              <td style="display:flex;align-items:center;gap:10px;">
+                {% if listing.card and listing.card.image_url %}
+                  <img src="{{ listing.card.image_url }}" style="width:32px;border-radius:4px;" />
+                {% endif %}
+                <div style="font-weight:600;font-size:13px;">{{ listing.card.name if listing.card else '—' }}</div>
+              </td>
+              <td><span class="badge badge--nm">{{ listing.condition_label }}</span></td>
+              <td style="font-weight:700;">NZ${{ '%.2f'|format(listing.price) }}</td>
+              <td style="font-size:12px;color:var(--c-text-3);">
+                {{ listing.sold_at.strftime('%d %b %Y') if listing.sold_at else '—' }}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}
