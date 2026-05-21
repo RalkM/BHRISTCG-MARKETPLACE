@@ -1,1 +1,68 @@
 <!-- Listing cards-->
+{% set finish = listing.finish | default('non_holo') %}
+{% set finish_label = listing.finish_label | default('') %}
+{% set cond = listing.condition | default('near_mint') %}
+
+<div class="listing-card listing-card--grid fade-up">
+  <a href="{{ url_for('marketplace.card_detail', card_id=listing.card_id) }}" class="listing-card__img-wrap">
+    {% if listing.card and listing.card.image_url %}
+      <img class="listing-card__img" src="{{ listing.card.image_url }}"
+           alt="{{ listing.card.name }}" loading="lazy" />
+    {% else %}
+      <div class="listing-card__no-img">🃏</div>
+    {% endif %}
+  </a>
+  <div class="listing-card__body">
+    <div class="listing-card__name">{{ listing.card.name if listing.card else 'Unknown Card' }}</div>
+
+    {% if seller_view %}
+      <!-- Seller view: Add to Listing button -->
+      <button class="listing-card__action-btn" onclick="window.location='{{ url_for('listing.new_listing') }}?card_id={{ listing.card_id }}'">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add to Listing
+      </button>
+    {% elif current_user.is_authenticated and current_user.id != listing.seller_id %}
+      <button class="listing-card__action-btn js-add-to-cart" data-cart-id="{{ listing.id }}">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        Add to Cart
+      </button>
+    {% elif not current_user.is_authenticated %}
+      <a href="{{ url_for('auth.login') }}" class="listing-card__action-btn">
+        Add to Cart
+      </a>
+    {% endif %}
+
+    <div class="listing-card__badges">
+      {# Condition badge #}
+      {% if cond == 'near_mint' %}
+        <span class="badge badge--nm">Near Mint</span>
+      {% elif cond == 'mint' %}
+        <span class="badge badge--nm">Mint</span>
+      {% elif cond == 'light_played' %}
+        <span class="badge badge--lp">LP</span>
+      {% elif cond == 'played' %}
+        <span class="badge badge--pl">Played</span>
+      {% else %}
+        <span class="badge badge--common">{{ listing.condition_label }}</span>
+      {% endif %}
+
+      {# Finish badge #}
+      {% if finish == 'sir' %}
+        <span class="badge badge--sir">SIR</span>
+      {% elif finish == 'holo' %}
+        <span class="badge badge--holo">Holo</span>
+      {% elif finish == 'foil' %}
+        <span class="badge badge--foil">Foil</span>
+      {% elif finish == 'reverse_holo' %}
+        <span class="badge badge--rare">Rev. Holo</span>
+      {% elif finish == 'alt_art' %}
+        <span class="badge badge--foil">Alt Art</span>
+      {% elif finish == 'non_holo' %}
+        <span class="badge badge--common">Non-Holo</span>
+      {% endif %}
+    </div>
+  </div>
+  <div class="listing-card__footer">
+    <div class="listing-card__price">NZ${{ '%.2f'|format(listing.price) }}</div>
+  </div>
+</div>
