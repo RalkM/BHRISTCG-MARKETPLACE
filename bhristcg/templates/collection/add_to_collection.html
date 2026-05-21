@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Add to {{ collection.name }} — BhrisTCG{% endblock %}
+{% block content %}
+<div class="container page">
+  <div style="max-width:640px;margin:0 auto;">
+    <a href="{{ url_for('collection.view_collection', collection_id=collection.id) }}" style="font-size:13px;color:var(--c-cyan);">← {{ collection.name }}</a>
+    <h1 style="font-family:var(--ff-display);font-size:24px;font-weight:800;margin:12px 0 20px;">Add Card to Collection</h1>
+
+    <!-- Search -->
+    <div class="card-surface" style="padding:18px;margin-bottom:16px;">
+      <form method="GET" style="display:flex;gap:10px;">
+        <input type="hidden" name="collection_id" value="{{ collection.id }}" />
+        <input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="Search card name…" autofocus />
+        <button type="submit" class="btn btn--primary">Search</button>
+      </form>
+      {% if search_query and cards %}
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:14px;">
+          {% for card in cards %}
+            <a href="?q={{ search_query }}&card_id={{ card.id }}" style="text-decoration:none;">
+              <div style="border:2px solid {% if selected_card and selected_card.id==card.id %}var(--c-cyan){% else %}var(--c-border){% endif %};border-radius:var(--radius-lg);overflow:hidden;transition:border-color .15s;">
+                {% if card.image_url %}
+                  <div style="aspect-ratio:2.5/3.5;overflow:hidden;background:var(--c-bg);">
+                    <img src="{{ card.image_url }}" alt="{{ card.name }}" style="width:100%;height:100%;object-fit:contain;" />
+                  </div>
+                {% endif %}
+                <div style="padding:6px 8px;font-size:11px;font-weight:600;">{{ card.name }}</div>
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+      {% elif search_query %}
+        <p style="color:var(--c-text-3);margin-top:12px;font-size:13px;">No cards found for "{{ search_query }}".</p>
+      {% endif %}
+    </div>
+
+    <!-- Add form -->
+    {% if selected_card %}
+      <div class="card-surface" style="padding:20px;">
+        <div style="display:flex;gap:14px;margin-bottom:18px;align-items:center;flex-wrap:wrap;">
+          {% if selected_card.image_url %}
+            <img src="{{ selected_card.image_url }}" alt="{{ selected_card.name }}" style="width:60px;border-radius:6px;flex-shrink:0;"/>
+          {% endif %}
+          <div>
+            <div style="font-weight:700;">{{ selected_card.name }}</div>
+            <div style="color:var(--c-text-3);font-size:12px;">{{ selected_card.set_name }}</div>
+            {% if selected_card.market_price %}
+              <div style="color:var(--c-cyan);font-weight:600;font-size:13px;">NZ${{ '%.2f'|format(selected_card.market_price) }} market</div>
+            {% endif %}
+          </div>
+        </div>
+        <form method="POST">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <input type="hidden" name="card_id" value="{{ selected_card.id }}" />
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div class="form-group">
+              <label class="form-label">Condition</label>
+              <select name="condition" class="form-control">
+                <option value="near_mint">Near Mint</option>
+                <option value="mint">Mint</option>
+                <option value="light_played">Light Played</option>
+                <option value="played">Played</option>
+                <option value="damaged">Damaged</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Quantity</label>
+              <input type="number" name="quantity" value="1" min="1" class="form-control" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Purchase Price (NZD)</label>
+              <input type="number" name="purchase_price" step="0.01" min="0" class="form-control" placeholder="0.00" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Finish</label>
+              <select name="finish" class="form-control">
+                <option value="non_holo">Non-Holo</option>
+                <option value="holo">Holo</option>
+                <option value="sir">SIR</option>
+                <option value="foil">Foil</option>
+                <option value="reverse_holo">Reverse Holo</option>
+                <option value="alt_art">Alt Art</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:8px;">
+            <button type="submit" class="btn btn--primary">Add to Collection</button>
+            <a href="{{ url_for('collection.view_collection', collection_id=collection.id) }}" class="btn btn--outline">Cancel</a>
+          </div>
+        </form>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

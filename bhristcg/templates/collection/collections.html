@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}My Collections — BhrisTCG{% endblock %}
+
+{% block content %}
+<div class="container page">
+
+  <!-- Profile card -->
+  <div style="background:var(--c-surface);border:1px solid var(--c-border);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;">
+    <div class="profile-card" style="padding:0;border:none;">
+      <div class="profile-header">
+        <div class="profile-avatar">
+          {% if current_user.avatar_url %}
+            <img src="{{ current_user.avatar_url }}" alt="{{ current_user.username }}" />
+          {% else %}
+            {{ current_user.username[0].upper() }}
+          {% endif %}
+        </div>
+        <div>
+          <div class="profile-name">{{ current_user.username }}'s Collection</div>
+        </div>
+        <div class="profile-actions">
+          <a href="{{ url_for('collection.new_collection') }}" class="btn btn--outline btn--sm">Create Collection</a>
+          <a href="{{ url_for('store.edit_profile') }}" class="btn btn--outline btn--sm" style="width:34px;padding:0;display:flex;align-items:center;justify-content:center;">⚙</a>
+        </div>
+      </div>
+      <div class="stat-boxes">
+        <div class="stat-box">
+          <div class="stat-box__label">Total Value</div>
+          <div class="stat-box__value">NZ${{ '%.2f'|format(total_value) }}</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box__label">Collections</div>
+          <div class="stat-box__value">{{ collections|length }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overview stats row -->
+  <div class="stats-row" style="margin-bottom:20px;">
+    <div class="stat-box">
+      <div class="stat-box__label">Total Owned</div>
+      <div class="stat-box__value" style="font-size:24px;">{{ total_owned }}</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-box__label">Total Needed</div>
+      <div class="stat-box__value" style="font-size:24px;">{{ total_needed }}</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-box__label">Needed Value</div>
+      <div class="stat-box__value" style="font-size:24px;">NZ${{ '%.2f'|format(needed_value) }}</div>
+    </div>
+  </div>
+
+  <!-- Collections grid -->
+  {% if collections %}
+    <div class="collection-grid">
+      {% for coll in collections %}
+        <a href="{{ url_for('collection.view_collection', collection_id=coll.id) }}" style="text-decoration:none;">
+          <div class="collection-card">
+            {% if coll.cover_image %}
+              <img src="{{ coll.cover_image }}" alt="{{ coll.name }}" />
+            {% else %}
+              <div style="width:100%;height:100%;background:linear-gradient(135deg,#1a237e,#006064);"></div>
+            {% endif %}
+            <div class="collection-card__info">
+              <div class="collection-card__name">{{ coll.name }}</div>
+              <div class="collection-card__count">{{ coll.card_count_label }}</div>
+            </div>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div style="text-align:center;padding:64px;background:var(--c-surface);border:1px solid var(--c-border);border-radius:var(--radius-lg);">
+      <div style="font-size:40px;margin-bottom:12px;opacity:.3;">📦</div>
+      <p style="color:var(--c-text-3);margin-bottom:20px;">No collections yet.</p>
+      <a href="{{ url_for('collection.new_collection') }}" class="btn btn--primary">Create Your First Collection</a>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}
