@@ -1,1 +1,12 @@
 <!-- Error Handling 404 -->
+{% extends "base.html" %}
+{% block title %}404 Not Found — BhrisTCG{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="error-page">
+    <div class="error-page__code">404</div>
+    <div class="error-page__msg">We couldn't find that page.</div>
+    <a href="{{ url_for('marketplace.home') }}" class="btn btn--primary">Go Home</a>
+  </div>
+</div>
+{% endblock %}
