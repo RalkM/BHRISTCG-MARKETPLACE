@@ -1,1 +1,105 @@
 <!-- Marketplace -->
+{% extends "base.html" %}
+{% block title %}Marketplace — BhrisTCG{% endblock %}
+
+{% block footer_logo %}
+<div class="footer__with-logo">
+  <div class="footer__logo-mark">Bhris<span>TCG</span></div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container page">
+
+  <!-- Filter bar -->
+  <form method="GET" action="{{ url_for('marketplace.marketplace') }}" id="filterForm">
+    <div class="filter-bar">
+      <div class="filter-bar__search">
+        <input type="text" name="q" value="{{ query }}" placeholder="Search Cards…" />
+      </div>
+
+      <select name="game" class="filter-select filter-auto-submit">
+        <option value="pokemon" {% if game_filter == 'pokemon' %}selected{% endif %}>Game: Pokemon</option>
+        <option value="onepiece" {% if game_filter == 'onepiece' %}selected{% endif %}>Game: One Piece</option>
+      </select>
+
+      <select name="set" class="filter-select filter-auto-submit">
+        <option value="">Set: All Sets</option>
+        {% for s in sets %}
+          <option value="{{ s }}" {% if set_filter == s %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+      </select>
+
+      <select name="rarity" class="filter-select filter-auto-submit">
+        <option value="">Rarity: All Rarities</option>
+        {% for r in rarities %}
+          <option value="{{ r }}" {% if rarity_filter == r %}selected{% endif %}>{{ r }}</option>
+        {% endfor %}
+      </select>
+
+      <select name="finish" class="filter-select filter-auto-submit">
+        <option value="">Finish: All Finishes</option>
+        {% for f in finishes %}
+          <option value="{{ f.lower().replace(' ','_').replace('.','').replace('-','_') }}"
+                  {% if finish_filter == f.lower().replace(' ','_').replace('.','').replace('-','_') %}selected{% endif %}>
+            Finish: {{ f }}
+          </option>
+        {% endfor %}
+      </select>
+
+      <div class="filter-bar__right">
+        <button type="button"
+                class="in-stock-toggle {% if in_stock %}active{% endif %}"
+                id="inStockToggle">
+          <div class="in-stock-toggle__dot"></div>
+          In Stock
+        </button>
+        <input type="hidden" name="in_stock" id="inStockInput" value="{{ in_stock }}" />
+
+        <select name="sort" class="filter-select filter-auto-submit">
+          <option value="newest" {% if sort=='newest' %}selected{% endif %}>Sort by: Relevance</option>
+          <option value="price_asc" {% if sort=='price_asc' %}selected{% endif %}>Price: Low–High</option>
+          <option value="price_desc" {% if sort=='price_desc' %}selected{% endif %}>Price: High–Low</option>
+          <option value="name" {% if sort=='name' %}selected{% endif %}>Name A–Z</option>
+        </select>
+
+        <button type="submit" class="btn btn--primary btn--sm">Search</button>
+      </div>
+    </div>
+  </form>
+
+  <!-- Grid -->
+  {% if listings %}
+    <div class="marketplace-grid">
+      {% for listing in listings %}
+        {% set seller_view = false %}
+        {% include "partials/listing_card.html" %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <div style="text-align:center;padding:64px 24px;background:var(--c-surface);border:1px solid var(--c-border);border-radius:var(--radius-lg);">
+      <div style="font-size:40px;margin-bottom:12px;opacity:.3;">🔍</div>
+      <p style="color:var(--c-text-3);">No listings found. <a href="{{ url_for('marketplace.marketplace') }}" style="color:var(--c-cyan);">Clear filters</a></p>
+    </div>
+  {% endif %}
+
+  <!-- Pagination -->
+  {% if pagination.pages > 1 %}
+    <div class="pagination">
+      {% if pagination.has_prev %}
+        <a href="{{ url_for('marketplace.marketplace', page=pagination.prev_num, q=query, set=set_filter, rarity=rarity_filter, game=game_filter, sort=sort) }}">‹</a>
+      {% endif %}
+      {% for p in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+        {% if p %}
+          {% if p == pagination.page %}<span class="active">{{ p }}</span>
+          {% else %}<a href="{{ url_for('marketplace.marketplace', page=p, q=query, set=set_filter, rarity=rarity_filter, game=game_filter, sort=sort) }}">{{ p }}</a>{% endif %}
+        {% else %}<span class="dots">…</span>{% endif %}
+      {% endfor %}
+      {% if pagination.has_next %}
+        <a href="{{ url_for('marketplace.marketplace', page=pagination.next_num, q=query, set=set_filter, rarity=rarity_filter, game=game_filter, sort=sort) }}">›</a>
+      {% endif %}
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}
