@@ -1,1 +1,100 @@
 <!-- the store -->
+{% extends "base.html" %}
+{% block title %}{{ seller.store_name or seller.username }} — BhrisTCG{% endblock %}
+{% block content %}
+<div class="container page">
+
+  <div style="display:grid;grid-template-columns:260px 1fr;gap:20px;align-items:start;">
+
+    <!-- Left: seller profile card -->
+    <div>
+      <div class="card-surface" style="padding:20px;margin-bottom:14px;">
+        <div style="text-align:center;margin-bottom:16px;">
+          <div class="profile-avatar" style="width:64px;height:64px;font-size:26px;margin:0 auto 10px;">
+            {% if seller.avatar_url %}
+              <img src="{{ seller.avatar_url }}" alt="{{ seller.username }}" />
+            {% else %}
+              {{ seller.username[0].upper() }}
+            {% endif %}
+          </div>
+          <div style="font-family:var(--ff-display);font-size:18px;font-weight:800;">{{ seller.store_name or seller.username }}</div>
+          <div style="font-size:12px;color:var(--c-text-3);">@{{ seller.username }}</div>
+          {% if seller.location %}
+            <div style="font-size:12px;color:var(--c-text-3);margin-top:4px;">📍 {{ seller.location }}</div>
+          {% endif %}
+        </div>
+
+        {% if seller.average_rating %}
+          <div style="text-align:center;margin-bottom:14px;">
+            <span style="font-size:22px;font-weight:800;font-family:var(--ff-display);">{{ seller.average_rating }}</span>
+            <span style="color:#f9a825;font-size:16px;">★</span>
+            <div style="font-size:11px;color:var(--c-text-3);">{{ seller.review_count }} review(s)</div>
+          </div>
+        {% endif %}
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+          <div style="text-align:center;padding:10px;border:1px solid var(--c-border);border-radius:var(--radius);">
+            <div style="font-weight:800;font-family:var(--ff-display);font-size:18px;">{{ listings|length }}</div>
+            <div style="font-size:10px;color:var(--c-text-3);text-transform:uppercase;">Listings</div>
+          </div>
+          <div style="text-align:center;padding:10px;border:1px solid var(--c-border);border-radius:var(--radius);">
+            <div style="font-weight:800;font-family:var(--ff-display);font-size:18px;">{{ total_sold }}</div>
+            <div style="font-size:10px;color:var(--c-text-3);text-transform:uppercase;">Sold</div>
+          </div>
+        </div>
+
+        {% if seller.bio %}
+          <p style="font-size:12px;color:var(--c-text-2);line-height:1.6;">{{ seller.bio }}</p>
+        {% endif %}
+
+        {% if current_user.is_authenticated and current_user.id != seller.id %}
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:14px;">
+            <a href="{{ url_for('chat.inbox') }}?with={{ seller.id }}" class="btn btn--primary btn--full btn--sm">Message Seller</a>
+            <a href="{{ url_for('review.leave_review', seller_id=seller.id) }}" class="btn btn--outline btn--full btn--sm">Leave Review</a>
+            <a href="{{ url_for('review.report') }}?user_id={{ seller.id }}" class="btn btn--sm btn--full" style="color:var(--c-red);border:1px solid var(--c-red);background:transparent;">Report Seller</a>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Reviews -->
+      {% if reviews %}
+        <div class="card-surface" style="padding:16px;">
+          <div style="font-weight:700;font-size:14px;margin-bottom:12px;">Recent Reviews</div>
+          {% for rev in reviews %}
+            <div style="border-bottom:1px solid var(--c-border);padding-bottom:10px;margin-bottom:10px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                <strong style="font-size:13px;">{{ rev.reviewer.username }}</strong>
+                <span style="color:#f9a825;font-size:13px;">{{ '★' * rev.rating }}{{ '☆' * (5-rev.rating) }}</span>
+              </div>
+              {% if rev.comment %}
+                <p style="font-size:12px;color:var(--c-text-2);">{{ rev.comment }}</p>
+              {% endif %}
+              <div style="font-size:11px;color:var(--c-text-3);margin-top:3px;">{{ rev.created_at.strftime('%d %b %Y') }}</div>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Right: listings -->
+    <div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <h2 style="font-family:var(--ff-display);font-size:20px;font-weight:800;">{{ seller.store_name or seller.username }}'s Listings</h2>
+      </div>
+      {% if listings %}
+        <div class="marketplace-grid">
+          {% for listing in listings %}
+            {% set seller_view = (current_user.is_authenticated and current_user.id == seller.id) %}
+            {% include "partials/listing_card.html" %}
+          {% endfor %}
+        </div>
+      {% else %}
+        <div style="text-align:center;padding:64px;background:var(--c-surface);border:1px solid var(--c-border);border-radius:var(--radius-lg);">
+          <p style="color:var(--c-text-3);">This seller has no active listings.</p>
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}
