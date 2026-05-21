@@ -1,1 +1,142 @@
 <!-- card details -->
+{% extends "base.html" %}
+{% block title %}{{ card.name }} — BhrisTCG{% endblock %}
+{% block content %}
+<div class="container page">
+  <div style="display:grid;grid-template-columns:280px 1fr;gap:28px;align-items:start;">
+
+    <!-- Card image + info -->
+    <div>
+      <div class="card-surface" style="padding:16px;text-align:center;margin-bottom:14px;">
+        {% if card.image_url_hi or card.image_url %}
+          <img src="{{ card.image_url_hi or card.image_url }}" alt="{{ card.name }}"
+               style="max-width:240px;border-radius:8px;margin:0 auto;" />
+        {% else %}
+          <div style="height:200px;display:flex;align-items:center;justify-content:center;font-size:56px;opacity:.2;">🃏</div>
+        {% endif %}
+      </div>
+      <div class="card-surface" style="padding:16px;">
+        <table style="width:100%;font-size:13px;border-collapse:collapse;">
+          <tr style="border-bottom:1px solid var(--c-border);">
+            <td style="padding:7px 0;color:var(--c-text-3);width:45%;">Set</td>
+            <td style="font-weight:500;">{{ card.set_name }}</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--c-border);">
+            <td style="padding:7px 0;color:var(--c-text-3);">Number</td>
+            <td style="font-weight:500;">#{{ card.number }}</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--c-border);">
+            <td style="padding:7px 0;color:var(--c-text-3);">Rarity</td>
+            <td style="font-weight:500;">{{ card.rarity or '—' }}</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--c-border);">
+            <td style="padding:7px 0;color:var(--c-text-3);">Type</td>
+            <td style="font-weight:500;">{{ card.types or '—' }}</td>
+          </tr>
+          {% if card.hp %}
+            <tr style="border-bottom:1px solid var(--c-border);">
+              <td style="padding:7px 0;color:var(--c-text-3);">HP</td>
+              <td style="font-weight:500;">{{ card.hp }}</td>
+            </tr>
+          {% endif %}
+          {% if card.market_price %}
+            <tr>
+              <td style="padding:7px 0;color:var(--c-text-3);">Market</td>
+              <td style="font-weight:700;color:var(--c-cyan);">NZ${{ '%.2f'|format(card.market_price) }}</td>
+            </tr>
+          {% endif %}
+        </table>
+      </div>
+
+      <!-- Price suggestion -->
+      {% if card.market_price %}
+        <div class="card-surface" style="padding:14px;margin-top:14px;">
+          <div style="font-weight:600;font-size:13px;margin-bottom:10px;">Price Guide</div>
+          <select class="form-control" id="conditionSelect" onchange="updatePriceSuggestion('{{ card.id }}')" style="margin-bottom:10px;">
+            <option value="near_mint">Near Mint</option>
+            <option value="mint">Mint</option>
+            <option value="light_played">Light Played</option>
+            <option value="played">Played</option>
+            <option value="damaged">Damaged</option>
+          </select>
+          <div style="font-size:20px;font-family:var(--ff-display);font-weight:800;" id="suggestedPrice">
+            NZ${{ '%.2f'|format(card.market_price) }}
+          </div>
+          <div style="font-size:11px;color:var(--c-text-3);" id="priceHint">{{ price_suggestion.explanation if price_suggestion else '' }}</div>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Right: listing cards -->
+    <div>
+      <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
+        <h1 style="font-family:var(--ff-display);font-size:28px;font-weight:800;">{{ card.name }}</h1>
+        {% if current_user.is_authenticated %}
+          <a href="{{ url_for('listing.new_listing') }}?card_id={{ card.id }}" class="btn btn--primary btn--sm">+ List This Card</a>
+        {% endif %}
+      </div>
+
+      {% if listings %}
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          {% for listing in listings %}
+            <div class="card-surface" style="padding:16px;display:flex;gap:14px;align-items:center;">
+              <!-- Seller -->
+              <div style="display:flex;align-items:center;gap:8px;min-width:140px;">
+                <div class="convo-avatar" style="width:32px;height:32px;font-size:13px;flex-shrink:0;">
+                  {{ listing.seller.username[0].upper() }}
+                </div>
+                <div>
+                  <a href="{{ url_for('store.store', username=listing.seller.username) }}" style="font-weight:600;font-size:13px;color:var(--c-text);">{{ listing.seller.username }}</a>
+                  {% if listing.seller.average_rating %}
+                    <div style="font-size:11px;color:#f9a825;">★ {{ listing.seller.average_rating }}</div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Badges -->
+              <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                <span class="badge badge--nm">{{ listing.condition_label }}</span>
+                <span class="badge badge--holo">{{ listing.finish_label }}</span>
+                {% if listing.delivery_type == 'pickup' %}<span class="badge badge--common">Pick-up</span>
+                {% elif listing.delivery_type == 'shipped' %}<span class="badge badge--common">Shipped</span>
+                {% else %}<span class="badge badge--common">Ship/Pick-up</span>{% endif %}
+              </div>
+
+              <!-- Notes -->
+              <div style="flex:1;font-size:12px;color:var(--c-text-3);">{{ listing.notes or '' }}</div>
+
+              <!-- Price + action -->
+              <div style="text-align:right;flex-shrink:0;">
+                <div style="font-family:var(--ff-display);font-size:20px;font-weight:800;margin-bottom:8px;">
+                  NZ${{ '%.2f'|format(listing.price) }}
+                </div>
+                {% if current_user.is_authenticated and current_user.id != listing.seller_id %}
+                  <button class="btn btn--primary btn--sm js-add-to-cart" data-cart-id="{{ listing.id }}">
+                    Add to Cart
+                  </button>
+                {% elif not current_user.is_authenticated %}
+                  <a href="{{ url_for('auth.login') }}" class="btn btn--primary btn--sm">Add to Cart</a>
+                {% else %}
+                  <span style="font-size:12px;color:var(--c-text-3);">Your listing</span>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div style="text-align:center;padding:64px;background:var(--c-surface);border:1px solid var(--c-border);border-radius:var(--radius-lg);">
+          <p style="color:var(--c-text-3);margin-bottom:16px;">No listings for this card yet.</p>
+          {% if current_user.is_authenticated %}
+            <a href="{{ url_for('listing.new_listing') }}?card_id={{ card.id }}" class="btn btn--primary">Be the first to list this card</a>
+          {% else %}
+            <a href="{{ url_for('auth.register') }}" class="btn btn--primary">Sign up to list cards</a>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>updatePriceSuggestion('{{ card.id }}');</script>
+{% endblock %}
