@@ -1,1 +1,83 @@
 <!-- homepage -->
+{% extends "base.html" %}
+{% block title %}BhrisTCG — Pokémon TCG Marketplace{% endblock %}
+
+{% block footer_logo %}
+<div class="footer__col">
+  
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container page">
+
+  <!-- Hero Banner -->
+  <div class="hero-banner">
+    <img class="hero-banner__img"
+         src="https://images.pokemontcg.io/sv3pt5/201_hires.png"
+         alt="BhrisTCG Banner"
+         style="object-position:center 20%;" />
+    <div class="hero-banner__overlay">
+      <a href="{{ url_for('marketplace.marketplace') }}" class="hero-banner__btn">Browse</a>
+    </div>
+  </div>
+
+  <!-- BhrisTCG intro section -->
+  <div style="margin-bottom: 28px;">
+    <div class="section-title">BhrisTCG</div>
+    <p style="max-width:600px;margin:auto;text-align:center;color:var(--c-text-2);">
+      Welcome to BhrisTCG, your premier online marketplace for Pokémon TCG cards in New Zealand! Whether you're a seasoned collector or just starting out, we offer a wide selection of cards to buy and sell. Our platform is designed to connect buyers and sellers across the country, making it easy to find the perfect card for your collection or get a great price for your extras. Join our community today and start trading!
+    </p>
+  </div>
+
+  <!-- Featured card carousel -->
+  {% if listings %}
+    <div class="carousel-wrap">
+      <button class="carousel-arrow carousel-arrow--left" aria-label="Scroll left">&#8249;</button>
+      <div class="carousel" id="featuredCarousel">
+        {% for listing in listings %}
+          <div class="listing-card">
+            <a href="{{ url_for('marketplace.card_detail', card_id=listing.card_id) }}" class="listing-card__img-wrap">
+              {% if listing.card and listing.card.image_url %}
+                <img class="listing-card__img" src="{{ listing.card.image_url }}"
+                     alt="{{ listing.card.name }}" loading="lazy" />
+              {% else %}
+                <div class="listing-card__no-img">🃏</div>
+              {% endif %}
+            </a>
+            <div class="listing-card__body">
+              <div class="listing-card__name">{{ listing.card.name if listing.card else '' }}</div>
+
+              {% if current_user.is_authenticated and current_user.id != listing.seller_id %}
+                <button class="listing-card__action-btn js-add-to-cart" data-cart-id="{{ listing.id }}">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                  Add to Cart
+                </button>
+              {% elif not current_user.is_authenticated %}
+                <a href="{{ url_for('auth.login') }}" class="listing-card__action-btn">Add to Cart</a>
+              {% endif %}
+
+              <div class="listing-card__badges">
+                {% if listing.finish == 'sir' %}<span class="badge badge--sir">SIR</span>
+                {% elif listing.finish == 'holo' %}<span class="badge badge--holo">Holo</span>
+                {% elif listing.finish == 'foil' %}<span class="badge badge--foil">Foil</span>
+                {% else %}<span class="badge badge--rare">{{ listing.finish_label }}</span>{% endif %}
+              </div>
+            </div>
+            <div class="listing-card__footer">
+              <div class="listing-card__price">NZ${{ '%.2f'|format(listing.price) }}</div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      <button class="carousel-arrow carousel-arrow--right" aria-label="Scroll right">&#8250;</button>
+    </div>
+  {% else %}
+    <div style="text-align:center;padding:48px;color:var(--c-text-3);background:var(--c-surface);border:1px solid var(--c-border);border-radius:var(--radius-lg);">
+      <div style="font-size:40px;margin-bottom:12px;">🃏</div>
+      <p>No listings yet. <a href="{{ url_for('listing.new_listing') }}" style="color:var(--c-cyan);">Be the first to list a card!</a></p>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}
