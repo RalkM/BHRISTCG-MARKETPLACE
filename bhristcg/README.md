@@ -27,7 +27,7 @@ BhrisTCG solves the gaps in eBay, TCGPlayer, and Facebook Marketplace for NZ Pok
 | Framework         | Flask 3.0 (Python)            |
 | ORM               | SQLAlchemy 2.0 + Flask-SQLAlchemy |
 | Migrations        | Flask-Migrate (Alembic)       |
-| Database          | PostgreSQL (required)         |
+| Database          | SQLite (required)         |
 | Authentication    | Flask-Login + Werkzeug hashing |
 | Forms/Validation  | Flask-WTF + WTForms           |
 | Real-time         | Flask-SocketIO + eventlet     |
