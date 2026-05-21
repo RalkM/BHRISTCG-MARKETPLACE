@@ -1,1 +1,120 @@
 <!-- creating new listings -->
+{% extends "base.html" %}
+{% block title %}New Listing — BhrisTCG{% endblock %}
+{% block content %}
+<div class="container page">
+  <div class="listing-menu">
+    <a href="{{ url_for('store.my_store') }}" style="font-size:13px;color:var(--c-cyan);">← My Store</a>
+    <h1 style="font-family:var(--ff-display);font-size:24px;font-weight:800;margin:12px 0 20px;">New Listing</h1>
+
+    <!-- Step 1: Search for a card -->
+    {% if not selected_card %}
+      <div class="listing-menu__form-section">
+        <div style="font-weight:700;font-size:15px;margin-bottom:12px;">1. Search for a card</div>
+        <form method="GET" action="{{ url_for('listing.new_listing') }}" style="display:flex;gap:10px;">
+          <input type="text" name="q" value="{{ search_query }}" class="form-control"
+                 placeholder="e.g. Charizard ex, Pikachu…" autofocus />
+          <button type="submit" class="btn btn--primary">Search</button>
+        </form>
+        {% if search_query and cards %}
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:16px;">
+            {% for card in cards %}
+              <a href="{{ url_for('listing.new_listing') }}?card_id={{ card.id }}&q={{ search_query }}" style="text-decoration:none;">
+                <div style="border:1px solid var(--c-border);border-radius:var(--radius-lg);overflow:hidden;transition:border-color .15s;cursor:pointer;"
+                     onmouseover="this.style.borderColor='var(--c-cyan)'" onmouseout="this.style.borderColor='var(--c-border)'">
+                  {% if card.image_url %}
+                    <div style="aspect-ratio:2.5/3.5;overflow:hidden;background:var(--c-bg);">
+                      <img src="{{ card.image_url }}" alt="{{ card.name }}" style="width:100%;height:100%;object-fit:contain;" />
+                    </div>
+                  {% endif %}
+                  <div style="padding:6px 8px;">
+                    <div style="font-size:11px;font-weight:600;color:var(--c-text);">{{ card.name }}</div>
+                    <div style="font-size:10px;color:var(--c-text-3);">{{ card.set_name }}</div>
+                  </div>
+                </div>
+              </a>
+            {% endfor %}
+          </div>
+        {% elif search_query %}
+          <p style="color:var(--c-text-3);margin-top:12px;font-size:13px;">No cards found for "{{ search_query }}".</p>
+        {% endif %}
+      </div>
+
+    <!-- Step 2: Fill listing details -->
+    {% else %}
+      <div class="listing-menu__card-preview">
+        {% if selected_card.image_url %}
+          <img src="{{ selected_card.image_url }}" alt="{{ selected_card.name }}" />
+        {% endif %}
+        <div style="font-family:var(--ff-display);font-size:18px;font-weight:800;margin-top:8px;">{{ selected_card.name }}</div>
+        <div style="font-size:12px;color:var(--c-text-3);">{{ selected_card.set_name }} · {{ selected_card.rarity }}</div>
+        {% if selected_card.market_price %}
+          <div style="margin-top:6px;font-size:14px;color:var(--c-cyan);font-weight:600;">Market: NZ${{ '%.2f'|format(selected_card.market_price) }}</div>
+        {% endif %}
+        <a href="{{ url_for('listing.new_listing') }}" style="font-size:12px;color:var(--c-text-3);margin-top:8px;display:inline-block;">← Choose different card</a>
+      </div>
+
+      <form method="POST" action="{{ url_for('listing.new_listing') }}">
+        {{ form.hidden_tag() }}
+        <input type="hidden" name="card_id" value="{{ selected_card.id }}" />
+
+        <div class="listing-menu__form-section">
+          <div class="listing-menu__grid">
+            <div class="form-group">
+              <label class="form-label">Condition</label>
+              {{ form.condition(class='form-control', id='conditionSelect', onchange="updatePriceSuggestion('{{ selected_card.id }}')") }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Finish</label>
+              {{ form.finish(class='form-control') }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Price (NZD)</label>
+              <div class="input-with-icon">
+                {{ form.price(class='form-control', placeholder='0.00', step='0.01', min='0.01', id='priceInput') }}
+              </div>
+              {% if price_suggestion and price_suggestion.has_data %}
+                <div style="margin-top:5px;display:flex;align-items:center;gap:8px;">
+                  <span style="font-size:11px;color:var(--c-text-3);" id="priceHint">{{ price_suggestion.explanation }}</span>
+                  <button type="button" onclick="document.getElementById('priceInput').value='{{ price_suggestion.suggested_price }}'" class="btn btn--sm" style="font-size:11px;padding:3px 8px;">Use NZ$<span id="suggestedPrice">{{ price_suggestion.suggested_price }}</span></button>
+                </div>
+              {% endif %}
+              {% for e in form.price.errors %}<span class="form-error">{{ e }}</span>{% endfor %}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Quantity</label>
+              {{ form.quantity(class='form-control', min='1', max='100') }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Delivery</label>
+              {{ form.delivery_type(class='form-control') }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Shipping Cost (NZD)</label>
+              {{ form.shipping_cost(class='form-control', placeholder='10.00') }}
+            </div>
+          </div>
+        </div>
+
+        <div class="listing-menu__notes-section">
+          <label>Notes / Card Details</label>
+          {{ form.notes(class='form-control', rows='4', placeholder='Describe the card condition in detail, pack-fresh, sleeved, etc…') }}
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:16px;">
+          <button type="submit" class="btn btn--primary">List Card</button>
+          <a href="{{ url_for('store.my_store') }}" class="btn btn--outline">Cancel</a>
+        </div>
+      </form>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+{% if selected_card %}
+  updatePriceSuggestion('{{ selected_card.id }}');
+{% endif %}
+</script>
+{% endblock %}
