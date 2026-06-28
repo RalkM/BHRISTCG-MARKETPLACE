@@ -13,6 +13,7 @@ MAX_MSG = 1000
 @chat_bp.route('/inbox')
 @login_required
 def inbox():
+    """ This will show the chat inbox with all the conversations with users and the messages for the active thread."""
     sent_ids = db.session.query(Message.recipient_id).filter_by(sender_id=current_user.id).distinct()
     recv_ids = db.session.query(Message.sender_id).filter_by(recipient_id=current_user.id).distinct()
     partner_ids = set([r[0] for r in sent_ids] + [r[0] for r in recv_ids])
@@ -48,6 +49,7 @@ def inbox():
 @chat_bp.route('/message/send', methods=['POST'])
 @login_required
 def send_message():
+    """This will allow you to send a message to another user and also validates the length and prevents you from self messaging"""
     recipient_id = request.form.get('recipient_id', type=int)
     body = request.form.get('body', '').strip()
 
@@ -86,6 +88,7 @@ def send_message():
 @chat_bp.route('/api/notifications')
 @login_required
 def get_notifications():
+    """This returns the 20 most recent notification and the unread counts for the current users"""
     notifs = Notification.query.filter_by(user_id=current_user.id).order_by(
         Notification.created_at.desc()).limit(20).all()
     unread = Notification.query.filter_by(user_id=current_user.id, is_read=False).count()
@@ -101,6 +104,7 @@ def mark_read():
 
 
 def register_socketio_events(socketio):
+    """This will registering SocketIO event handlers for real time chat and the room management."""
     from flask_socketio import join_room, leave_room
 
     @socketio.on('connect')
