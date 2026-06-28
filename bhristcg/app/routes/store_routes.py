@@ -13,6 +13,7 @@ store_bp = Blueprint('store', __name__)
 
 @store_bp.route('/store/<username>')
 def store(username):
+    """This will be displaying the sellers public store profile with the active listing and their recent reviews"""
     seller = User.query.filter_by(username=username).first_or_404()
     listings = Listing.query.filter_by(seller_id=seller.id, status='active').order_by(
         Listing.created_at.desc()).all()
@@ -26,6 +27,7 @@ def store(username):
 @store_bp.route('/my-store')
 @login_required
 def my_store():
+    """This shows the current loggedin user's private store dashboard with their active and sold listings"""
     active = Listing.query.filter_by(seller_id=current_user.id, status='active').order_by(
         Listing.created_at.desc()).all()
     sold = Listing.query.filter_by(seller_id=current_user.id, status='sold').order_by(
@@ -37,6 +39,7 @@ def my_store():
 @store_bp.route('/profile/edit', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
+    """This allows the current user to be able to update their store name, description, bio and the location."""
     form = ProfileForm(obj=current_user)
     if form.validate_on_submit():
         current_user.store_name = sanitize(form.store_name.data or '', 100) or None
