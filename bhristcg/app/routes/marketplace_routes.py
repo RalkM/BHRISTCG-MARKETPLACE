@@ -76,8 +76,8 @@ def marketplace():
 
 
 @marketplace_bp.route('/card/<card_id>')
-"""This will show the full card details and all the active listings for that card with a price suggestion """
 def card_detail(card_id):
+    """This will show the full card details and all the active listings for that card with a price suggestion """
     if len(card_id) > 128:
         abort(404)
     card = Card.query.get(card_id)
@@ -103,8 +103,8 @@ def api_price_suggestion():
 
 @marketplace_bp.route('/cart')
 @login_required
-"""This will show the current loggedin user's card with the valid active listings and the cost summary"""
 def cart():
+    """This will show the current loggedin user's card with the valid active listings and the cost summary"""
     items = CartItem.query.filter_by(user_id=current_user.id).all()
     valid = [i for i in items if i.listing and i.listing.status == 'active']
     subtotal = sum(i.listing.price for i in valid)
@@ -114,8 +114,8 @@ def cart():
 
 @marketplace_bp.route('/cart/add/<int:listing_id>', methods=['POST'])
 @login_required
-"""You are able to add listings to the cart with this it also prevents you from buying own listings or any sold items"""
 def add_to_cart(listing_id):
+    """You are able to add listings to the cart with this it also prevents you from buying own listings or any sold items"""
     listing = Listing.query.get_or_404(listing_id)
     if listing.seller_id == current_user.id:
         return jsonify({'error': 'Cannot buy your own listing.'}), 400
@@ -142,8 +142,8 @@ def remove_from_cart(item_id):
 
 @marketplace_bp.route('/checkout', methods=['POST'])
 @login_required
-"""This will be handling the purchase process of the cart items it also creates transaction record and it will notify the sellers."""
 def checkout():
+    """This will be handling the purchase process of the cart items it also creates transaction record and it will notify the sellers."""
     delivery = request.form.get('delivery_type', 'shipped')
     if delivery not in ('shipped', 'pickup'):
         delivery = 'shipped'
@@ -204,7 +204,7 @@ def checkout():
 
 
 def _get_sets():
-    """This will return the distinct card sets from the active listings falling back to the mock data.""""
+    """This will return the distinct card sets from the active listings falling back to the mock data."""
     from sqlalchemy import distinct
     rows = db.session.query(distinct(Card.set_name)).join(
         Listing, Listing.card_id == Card.id).filter(Listing.status == 'active').all()
