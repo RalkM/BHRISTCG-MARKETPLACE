@@ -14,6 +14,7 @@ ALLOWED_SORT = {'newest', 'price_asc', 'price_desc', 'name'}
 
 @marketplace_bp.route('/')
 def home():
+    """Render the home page with featured card listings."""
     listings = Listing.query.filter_by(status='active').order_by(
         Listing.created_at.desc()).limit(10).all()
     return render_template('home.html', listings=listings)

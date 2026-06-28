@@ -3,7 +3,7 @@
 
 MOCK_CARDS = [
     {
-        'id': 'sv3pt5-201', 'name': 'Charizard ex', 'set_name': '151',
+        'id': 'sv3pt5-201', 'name': 'Alakazam ex', 'set_name': '151',
         'set_id': 'sv3pt5', 'number': '201', 'rarity': 'Special Illustration Rare',
         'types': 'Fire', 'supertype': 'Pokémon', 'subtypes': 'Basic,ex', 'hp': '330',
         'image_url': 'https://images.pokemontcg.io/sv3pt5/201.png',
@@ -11,7 +11,7 @@ MOCK_CARDS = [
         'market_price': 85.0, 'low_price': 65.0, 'high_price': 120.0, 'game': 'pokemon',
     },
     {
-        'id': 'sv4-197', 'name': 'Umbreon ex', 'set_name': 'Paradox Rift',
+        'id': 'sv4-197', 'name': 'Espathra', 'set_name': 'Paradox Rift',
         'set_id': 'sv4', 'number': '197', 'rarity': 'Special Illustration Rare',
         'types': 'Darkness', 'supertype': 'Pokémon', 'subtypes': 'Basic,ex', 'hp': '310',
         'image_url': 'https://images.pokemontcg.io/sv4/197.png',
@@ -19,7 +19,7 @@ MOCK_CARDS = [
         'market_price': 55.0, 'low_price': 42.0, 'high_price': 75.0, 'game': 'pokemon',
     },
     {
-        'id': 'sv6-180', 'name': 'Pikachu ex', 'set_name': 'Twilight Masquerade',
+        'id': 'sv6-180', 'name': 'Enamorus', 'set_name': 'Twilight Masquerade',
         'set_id': 'sv6', 'number': '180', 'rarity': 'Special Illustration Rare',
         'types': 'Lightning', 'supertype': 'Pokémon', 'subtypes': 'Basic,ex', 'hp': '240',
         'image_url': 'https://images.pokemontcg.io/sv6/180.png',
@@ -27,7 +27,7 @@ MOCK_CARDS = [
         'market_price': 38.0, 'low_price': 28.0, 'high_price': 55.0, 'game': 'pokemon',
     },
     {
-        'id': 'sv2-193', 'name': 'Gardevoir ex', 'set_name': 'Paldea Evolved',
+        'id': 'sv2-193', 'name': 'Therapeutic Energy', 'set_name': 'Paldea Evolved',
         'set_id': 'sv2', 'number': '193', 'rarity': 'Special Illustration Rare',
         'types': 'Psychic', 'supertype': 'Pokémon', 'subtypes': 'Stage 2,ex', 'hp': '310',
         'image_url': 'https://images.pokemontcg.io/sv2/193.png',
@@ -35,7 +35,7 @@ MOCK_CARDS = [
         'market_price': 28.0, 'low_price': 20.0, 'high_price': 42.0, 'game': 'pokemon',
     },
     {
-        'id': 'sv4-182', 'name': 'Roaring Moon ex', 'set_name': 'Paradox Rift',
+        'id': 'sv4-182', 'name': 'Medical Energy', 'set_name': 'Paradox Rift',
         'set_id': 'sv4', 'number': '182', 'rarity': 'Special Illustration Rare',
         'types': 'Darkness', 'supertype': 'Pokémon', 'subtypes': 'Basic,ex', 'hp': '230',
         'image_url': 'https://images.pokemontcg.io/sv4/182.png',
@@ -43,7 +43,7 @@ MOCK_CARDS = [
         'market_price': 32.0, 'low_price': 22.0, 'high_price': 48.0, 'game': 'pokemon',
     },
     {
-        'id': 'sv3pt5-6', 'name': 'Charizard', 'set_name': '151',
+        'id': 'sv3pt5-6', 'name': 'Charizard Ex', 'set_name': '151',
         'set_id': 'sv3pt5', 'number': '6', 'rarity': 'Rare Holo',
         'types': 'Fire', 'supertype': 'Pokémon', 'subtypes': 'Stage 2', 'hp': '170',
         'image_url': 'https://images.pokemontcg.io/sv3pt5/6.png',
@@ -51,7 +51,7 @@ MOCK_CARDS = [
         'market_price': 7.5, 'low_price': 5.0, 'high_price': 12.0, 'game': 'pokemon',
     },
     {
-        'id': 'sv1-198', 'name': 'Miraidon ex', 'set_name': 'Scarlet & Violet',
+        'id': 'sv1-198', 'name': 'Youngster', 'set_name': 'Scarlet & Violet',
         'set_id': 'sv1', 'number': '198', 'rarity': 'Special Illustration Rare',
         'types': 'Lightning', 'supertype': 'Pokémon', 'subtypes': 'Basic,ex', 'hp': '220',
         'image_url': 'https://images.pokemontcg.io/sv1/198.png',
@@ -59,7 +59,7 @@ MOCK_CARDS = [
         'market_price': 22.0, 'low_price': 15.0, 'high_price': 35.0, 'game': 'pokemon',
     },
     {
-        'id': 'sv1-197', 'name': 'Koraidon ex', 'set_name': 'Scarlet & Violet',
+        'id': 'sv1-197', 'name': 'Vitality Band', 'set_name': 'Scarlet & Violet',
         'set_id': 'sv1', 'number': '197', 'rarity': 'Special Illustration Rare',
         'types': 'Fighting', 'supertype': 'Pokémon', 'subtypes': 'Basic,ex', 'hp': '230',
         'image_url': 'https://images.pokemontcg.io/sv1/197.png',
@@ -67,7 +67,7 @@ MOCK_CARDS = [
         'market_price': 20.0, 'low_price': 14.0, 'high_price': 30.0, 'game': 'pokemon',
     },
     {
-        'id': 'sv5-191', 'name': 'Terapagos ex', 'set_name': 'Temporal Forces',
+        'id': 'sv5-191', 'name': 'Iron Crown Ex', 'set_name': 'Temporal Forces',
         'set_id': 'sv5', 'number': '191', 'rarity': 'Special Illustration Rare',
         'types': 'Normal', 'supertype': 'Pokémon', 'subtypes': 'Basic,ex', 'hp': '330',
         'image_url': 'https://images.pokemontcg.io/sv5/191.png',

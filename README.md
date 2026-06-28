@@ -17,6 +17,44 @@ BhrisTCG solves the gaps in eBay, TCGPlayer, and Facebook Marketplace for NZ Pok
 - Real-time buyer/seller chat via Flask-SocketIO
 - Seller ratings and reviews
 - Report system for fraud/misrepresentation
+## How to Run
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/RalkM/BHRISTCG-MARKETPLACE.git
+cd BHRISTCG-MARKETPLACE
+```
+
+### 2. Create a virtual environment
+
+```bash
+python -m venv venv
+```
+
+### 3. Activate the virtual environment
+
+**Windows:**
+```bash
+venv\Scripts\activate
+```
+
+**Mac/Linux:**
+```bash
+source venv/bin/activate
+```
+
+### 4. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 5. Run the application
+
+```bash
+flask run
+```
 
 ---
 

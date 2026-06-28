@@ -17,6 +17,44 @@ BhrisTCG solves the gaps in eBay, TCGPlayer, and Facebook Marketplace for NZ Pok
 - Real-time buyer/seller chat via Flask-SocketIO
 - Seller ratings and reviews
 - Report system for fraud/misrepresentation
+## How to Run
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/RalkM/BHRISTCG-MARKETPLACE.git
+cd BHRISTCG-MARKETPLACE
+```
+
+### 2. Create a virtual environment
+
+```bash
+python -m venv venv
+```
+
+### 3. Activate the virtual environment
+
+**Windows:**
+```bash
+venv\Scripts\activate
+```
+
+**Mac/Linux:**
+```bash
+source venv/bin/activate
+```
+
+### 4. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 5. Run the application
+
+```bash
+flask run
+```
 
 ---
 
@@ -26,12 +64,12 @@ BhrisTCG solves the gaps in eBay, TCGPlayer, and Facebook Marketplace for NZ Pok
 |-------------------|-------------------------------|
 | Framework         | Flask 3.0 (Python)            |
 | ORM               | SQLAlchemy 2.0 + Flask-SQLAlchemy |
-| Migrations        | Flask-Migrate (Alembic)       |
-| Database          | SQLite (required)         |
+| Migrations        | Flask-Migrate       |
+| Database          | PostgreSQL          |
 | Authentication    | Flask-Login + Werkzeug hashing |
 | Forms/Validation  | Flask-WTF + WTForms           |
 | Real-time         | Flask-SocketIO + eventlet     |
-| HTTP API          | Pokémon TCG API (optional)    |
+| HTTP API          | Pokémon TCG API    |
 | Architecture      | MVC + Service Layer           |
 
 ---

@@ -1,7 +1,9 @@
 <!-- homepage -->
 {% extends "base.html" %}
 {% block title %}BhrisTCG — Pokémon TCG Marketplace{% endblock %}
-
+<head>
+<meta name="description" content="BhrisTCG — New Zealand's Pokemon TCG marketplace for collectors and sellers.">
+</head>
 {% block footer_logo %}
 <div class="footer__col">
   
@@ -16,7 +18,7 @@
     <img class="hero-banner__img"
          src="https://images.pokemontcg.io/sv3pt5/201_hires.png"
          alt="BhrisTCG Banner"
-         style="object-position:center 20%;" />
+         style="object-position:center 40%;" />
     <div class="hero-banner__overlay">
       <a href="{{ url_for('marketplace.marketplace') }}" class="hero-banner__btn">Browse</a>
     </div>
@@ -40,9 +42,9 @@
             <a href="{{ url_for('marketplace.card_detail', card_id=listing.card_id) }}" class="listing-card__img-wrap">
               {% if listing.card and listing.card.image_url %}
                 <img class="listing-card__img" src="{{ listing.card.image_url }}"
-                     alt="{{ listing.card.name }}" loading="lazy" />
+                     alt="{{ listing.card.name }}" loading="eager" fetchpriority="high"/>
               {% else %}
-                <div class="listing-card__no-img">🃏</div>
+                <div class="listing-card__no-img"></div>
               {% endif %}
             </a>
             <div class="listing-card__body">
@@ -74,7 +76,7 @@
     </div>
   {% else %}
     <div style="text-align:center;padding:48px;color:var(--c-text-3);background:var(--c-surface);border:1px solid var(--c-border);border-radius:var(--radius-lg);">
-      <div style="font-size:40px;margin-bottom:12px;">🃏</div>
+      <div style="font-size:40px;margin-bottom:12px;"></div>
       <p>No listings yet. <a href="{{ url_for('listing.new_listing') }}" style="color:var(--c-cyan);">Be the first to list a card!</a></p>
     </div>
   {% endif %}
