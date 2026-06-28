@@ -22,6 +22,7 @@ def home():
 
 @marketplace_bp.route('/marketplace')
 def marketplace():
+    """With this you can browse listings with the search, filter by set/rarity, sort, and pagination :> """
     query = request.args.get('q', '').strip()[:128]
     set_filter = request.args.get('set', '').strip()
     rarity_filter = request.args.get('rarity', '').strip()
@@ -75,6 +76,7 @@ def marketplace():
 
 
 @marketplace_bp.route('/card/<card_id>')
+"""This will show the full card details and all the active listings for that card with a price suggestion """
 def card_detail(card_id):
     if len(card_id) > 128:
         abort(404)
@@ -101,6 +103,7 @@ def api_price_suggestion():
 
 @marketplace_bp.route('/cart')
 @login_required
+"""This will show the current loggedin user's card with the valid active listings and the cost summary"""
 def cart():
     items = CartItem.query.filter_by(user_id=current_user.id).all()
     valid = [i for i in items if i.listing and i.listing.status == 'active']
@@ -111,6 +114,7 @@ def cart():
 
 @marketplace_bp.route('/cart/add/<int:listing_id>', methods=['POST'])
 @login_required
+"""You are able to add listings to the cart with this it also prevents you from buying own listings or any sold items"""
 def add_to_cart(listing_id):
     listing = Listing.query.get_or_404(listing_id)
     if listing.seller_id == current_user.id:
@@ -138,6 +142,7 @@ def remove_from_cart(item_id):
 
 @marketplace_bp.route('/checkout', methods=['POST'])
 @login_required
+"""This will be handling the purchase process of the cart items it also creates transaction record and it will notify the sellers."""
 def checkout():
     delivery = request.form.get('delivery_type', 'shipped')
     if delivery not in ('shipped', 'pickup'):
@@ -199,6 +204,7 @@ def checkout():
 
 
 def _get_sets():
+    """This will return the distinct card sets from the active listings falling back to the mock data.""""
     from sqlalchemy import distinct
     rows = db.session.query(distinct(Card.set_name)).join(
         Listing, Listing.card_id == Card.id).filter(Listing.status == 'active').all()
@@ -207,6 +213,7 @@ def _get_sets():
 
 
 def _get_rarities():
+    """This will also return distinct rarities from the active listings falling back to the mock data created"""
     from sqlalchemy import distinct
     rows = db.session.query(distinct(Card.rarity)).join(
         Listing, Listing.card_id == Card.id).filter(Listing.status == 'active').all()
